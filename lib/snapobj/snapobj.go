@@ -3,6 +3,7 @@ package snapobj
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -25,7 +26,23 @@ func FromFileInfo(fi os.FileInfo) (*SnapObj, error) {
 	if !fi.IsDir() {
 		return nil, fmt.Errorf("not a directory")
 	}
-	return nil, fmt.Errorf("not implemented yet")
+	parts := strings.Split(fi.Name(), "@")
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("invalid format")
+	}
+
+	xtype, err := toType(parts[0])
+	if err != nil {
+		return nil, err
+	}
+	xtime, err := time.Parse(time.RFC3339, parts[1])
+	if err != nil {
+		return nil, err
+	}
+	return &SnapObj{
+		Type:  xtype,
+		Epoch: xtime.UTC(),
+	}, nil
 }
 
 func (so SnapObj) FileName() string {
@@ -46,5 +63,22 @@ func (t Type) String() string {
 		return "yearly"
 	default:
 		return fmt.Sprintf("uk-%d", t)
+	}
+}
+
+func toType(s string) (Type, error) {
+	switch s {
+	case "hourly":
+		return Hourly, nil
+	case "daily":
+		return Daily, nil
+	case "weekly":
+		return Weekly, nil
+	case "monthly":
+		return Monthly, nil
+	case "yearly":
+		return Yearly, nil
+	default:
+		return 0, fmt.Errorf("unknown type string")
 	}
 }
