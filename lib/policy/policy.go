@@ -32,14 +32,14 @@ func (p Policy) Plan(s []*snapobj.SnapObj) ([]*Plan, error) {
 	}
 
 	// Second: check all types to see if we need to create a new snapshot.
-	for t, o := range catalog {
+	for t := range p.Keep {
 		if p.Keep[t] < 1 {
 			// skip as there should be no snapshots of this type.
 			continue
 		}
 
 		var current bool
-		for _, x := range o {
+		for _, x := range catalog[t] {
 			if x.IsCurrent(p.Now) {
 				current = true
 				break

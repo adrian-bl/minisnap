@@ -41,6 +41,25 @@ func TestPlan(t *testing.T) {
 					snapobj.Daily:  1,
 				},
 			},
+			input: []*snapobj.SnapObj{},
+			want: []*Plan{
+				{
+					Target: sof("hourly@1972-11-07T16:02:03Z"),
+				},
+				{
+					Target: sof("daily@1972-11-07T16:02:03Z"),
+				},
+			},
+		},
+		{
+			name: "create more",
+			policy: &Policy{
+				Now: now,
+				Keep: map[snapobj.Type]int{
+					snapobj.Hourly: 2,
+					snapobj.Daily:  1,
+				},
+			},
 			input: []*snapobj.SnapObj{
 				sof("hourly@1972-11-07T10:54:13Z"),
 				sof("daily@1972-11-07T16:54:13Z"),
