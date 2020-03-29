@@ -167,3 +167,47 @@ func TestFromFileInfo(t *testing.T) {
 		}
 	}
 }
+
+func TestIsCurrent(t *testing.T) {
+	now := time.Unix(80061, 0)
+	input := []struct {
+		snap *SnapObj
+		want bool
+	}{
+		{
+			snap: &SnapObj{
+				Type:  Weekly,
+				Epoch: time.Unix(80000, 0),
+			},
+			want: true,
+		},
+		{
+			snap: &SnapObj{
+				Type:  Hourly,
+				Epoch: time.Unix(90000, 0),
+			},
+			want: true,
+		},
+		{
+			snap: &SnapObj{
+				Type:  Minutely,
+				Epoch: time.Unix(80002, 0),
+			},
+			want: true,
+		},
+		{
+			snap: &SnapObj{
+				Type:  Minutely,
+				Epoch: time.Unix(80001, 0),
+			},
+			want: false,
+		},
+	}
+
+	for _, tt := range input {
+		got := tt.snap.IsCurrent(now)
+		if got != tt.want {
+			t.Errorf("IsCurrent(%v) = %v, want %v", tt.snap, got, tt.want)
+		}
+	}
+}

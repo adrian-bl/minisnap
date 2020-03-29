@@ -10,11 +10,12 @@ import (
 type Type int
 
 const (
-	Hourly  = 3600
-	Daily   = 86400
-	Weekly  = 86400 * 7
-	Monthly = 2592000
-	Yearly  = 86400 * 360
+	Minutely = 60
+	Hourly   = 3600
+	Daily    = 86400
+	Weekly   = 86400 * 7
+	Monthly  = 2592000
+	Yearly   = 86400 * 360
 )
 
 type SnapObj struct {
@@ -22,11 +23,17 @@ type SnapObj struct {
 	Type  Type
 }
 
+// FromFileInfo returns a snap object from a os.FileInfo.
 func FromFileInfo(fi os.FileInfo) (*SnapObj, error) {
 	if !fi.IsDir() {
 		return nil, fmt.Errorf("not a directory")
 	}
-	parts := strings.Split(fi.Name(), "@")
+	return FromString(fi.Name())
+}
+
+// FromString returns a snap object from a bare string.
+func FromString(s string) (*SnapObj, error) {
+	parts := strings.Split(s, "@")
 	if len(parts) != 2 {
 		return nil, fmt.Errorf("invalid format")
 	}
@@ -45,12 +52,26 @@ func FromFileInfo(fi os.FileInfo) (*SnapObj, error) {
 	}, nil
 }
 
+// FileName returns the file basename to use.
 func (so SnapObj) FileName() string {
 	return fmt.Sprintf("%s@%s", so.Type.String(), so.Epoch.UTC().Format(time.RFC3339))
 }
 
+// SameType returns true if the compared snap objects are of the same snapshot type.
+func (so SnapObj) SameType(oo SnapObj) bool {
+	return so.Type == oo.Type
+}
+
+func (so SnapObj) IsCurrent(t time.Time) bool {
+	exp := so.Epoch.Add(time.Duration(so.Type) * time.Second)
+	return exp.After(t)
+}
+
+// String returns the string version of this type.
 func (t Type) String() string {
 	switch t {
+	case Minutely:
+		return "minutely"
 	case Hourly:
 		return "hourly"
 	case Daily:
@@ -66,8 +87,11 @@ func (t Type) String() string {
 	}
 }
 
+// toType takes a string and returns a matching Type.
 func toType(s string) (Type, error) {
 	switch s {
+	case "minutely":
+		return Minutely, nil
 	case "hourly":
 		return Hourly, nil
 	case "daily":
