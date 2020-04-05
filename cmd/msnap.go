@@ -12,11 +12,11 @@ import (
 )
 
 var (
-	flagDryRun = flag.Bool("dry_run", false, "do not execute, just print what would be done")
+	dryRun = flag.Bool("dry_run", false, "do not execute, just print what would be done")
 )
 
 func main() {
-
+	flag.Parse()
 	fakePol := policy.Policy{
 		Now: time.Now(),
 		Keep: map[snapobj.Type]int{
@@ -26,7 +26,7 @@ func main() {
 	}
 
 	vol := "/"
-	fss, err := fs.ForVolume(vol)
+	fss, err := fs.ForVolume(vol, *dryRun)
 	if err != nil {
 		xfail("failed to open volume %s: %v", vol, err)
 	}

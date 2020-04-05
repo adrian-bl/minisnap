@@ -20,13 +20,13 @@ type FsSnap interface {
 	Delete(*snapobj.SnapObj) error
 }
 
-func ForVolume(path string) (FsSnap, error) {
+func ForVolume(path string, dryRun bool) (FsSnap, error) {
 	buf := &syscall.Statfs_t{}
 	if err := syscall.Statfs(path, buf); err != nil {
 		return nil, err
 	}
 
-	e := &exec.Exec{DryRun: false}
+	e := &exec.Exec{DryRun: dryRun}
 	switch buf.Type {
 	case fsBtrfs:
 		return btrfs.New(path, ".snapshots", e), nil
