@@ -19,7 +19,7 @@ type yamlConf struct {
 }
 
 // parseConfig converts the YAML encoded config at path and returns a volume policy.
-func parseConfig(path string) (*VolPolicy, error) {
+func parseConfig(path string) (VolPolicy, error) {
 	fh, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -54,5 +54,5 @@ func parseConfig(path string) (*VolPolicy, error) {
 			vp[k][st] = v
 		}
 	}
-	return &vp, nil
+	return vp, nil
 }
