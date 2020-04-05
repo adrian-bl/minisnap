@@ -38,7 +38,7 @@ func FromString(s string) (*SnapObj, error) {
 		return nil, fmt.Errorf("invalid format")
 	}
 
-	xtype, err := toType(parts[0])
+	xtype, err := ToType(parts[0])
 	if err != nil {
 		return nil, err
 	}
@@ -87,8 +87,8 @@ func (t Type) String() string {
 	}
 }
 
-// toType takes a string and returns a matching Type.
-func toType(s string) (Type, error) {
+// ToType takes a string and returns a matching Type.
+func ToType(s string) (Type, error) {
 	switch s {
 	case "minutely":
 		return Minutely, nil
