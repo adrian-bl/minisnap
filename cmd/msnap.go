@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/adrian-bl/minisnap/lib/fs"
@@ -37,6 +38,7 @@ func main() {
 	}
 
 	for _, vol := range vols {
+		vol = filepath.Clean(vol)
 		vp, ok := conf[vol]
 		if !ok {
 			xfail(fmt.Sprintf("volume %s: not defined in config", vol))

@@ -23,7 +23,12 @@ func New(path, snapdir string, exec exec) *Btrfs {
 }
 
 func (b *Btrfs) wdir() string {
-	return fmt.Sprintf("%s%s", b.path, b.snapdir)
+	p := b.path
+	if len(p) > 0 && p[len(p)-1] != '/' {
+		p += "/"
+	}
+	p += b.snapdir
+	return p
 }
 
 func (b *Btrfs) Description() string {
