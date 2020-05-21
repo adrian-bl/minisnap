@@ -45,7 +45,7 @@ func main() {
 		}
 		p := &policy.Policy{
 			Now:  time.Now(),
-			Keep: vp,
+			Keep: vp.Schedule,
 		}
 		if err := snapshot(vol, p, *dryRun); err != nil {
 			xfail(fmt.Sprintf("volume %s: %v", vol, err))
