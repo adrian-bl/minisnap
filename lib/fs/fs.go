@@ -6,6 +6,7 @@ import (
 
 	"github.com/adrian-bl/minisnap/lib/fs/btrfs"
 	"github.com/adrian-bl/minisnap/lib/fs/exec"
+	"github.com/adrian-bl/minisnap/lib/opts"
 	"github.com/adrian-bl/minisnap/lib/snapobj"
 )
 
@@ -20,7 +21,7 @@ type FsSnap interface {
 	Delete(*snapobj.SnapObj) error
 }
 
-func ForVolume(path string, dryRun bool) (FsSnap, error) {
+func ForVolume(path string, vopts opts.VolOptions, dryRun bool) (FsSnap, error) {
 	buf := &syscall.Statfs_t{}
 	if err := syscall.Statfs(path, buf); err != nil {
 		return nil, err
@@ -29,6 +30,9 @@ func ForVolume(path string, dryRun bool) (FsSnap, error) {
 	e := &exec.Exec{DryRun: dryRun}
 	switch buf.Type {
 	case fsBtrfs:
+		if vopts.Recursive {
+			return nil, fmt.Errorf("btrfs does not support recursive snapshots")
+		}
 		return btrfs.New(path, ".snapshots", e), nil
 	}
 	return nil, fmt.Errorf("Unknown fstype: %X", buf.Type)

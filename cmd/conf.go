@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/adrian-bl/minisnap/lib/opts"
 	"github.com/adrian-bl/minisnap/lib/snapobj"
 
 	"gopkg.in/yaml.v2"
@@ -15,18 +16,14 @@ type VolPolicy map[string]*VolPolicyEntry
 
 type VolPolicyEntry struct {
 	Schedule map[snapobj.Type]int
-	Options  VolOptions
-}
-
-type VolOptions struct {
-	Recursive bool
+	Options  opts.VolOptions
 }
 
 // yamlConfig is used to unmarshal the user config.
 type yamlConf struct {
 	Targets map[string]struct {
 		Schedule map[string]int
-		Options  VolOptions
+		Options  opts.VolOptions
 	}
 }
 

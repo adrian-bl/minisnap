@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/adrian-bl/minisnap/lib/fs"
+	"github.com/adrian-bl/minisnap/lib/opts"
 	"github.com/adrian-bl/minisnap/lib/policy"
 )
 
@@ -47,7 +48,7 @@ func main() {
 			Now:  time.Now(),
 			Keep: vp.Schedule,
 		}
-		if err := snapshot(vol, p, *dryRun); err != nil {
+		if err := snapshot(vol, vp.Options, p, *dryRun); err != nil {
 			xfail(fmt.Sprintf("volume %s: %v", vol, err))
 		}
 	}
@@ -55,8 +56,8 @@ func main() {
 }
 
 // snapshot performs the snapshotting operation on the given volume.
-func snapshot(vol string, p *policy.Policy, dryRun bool) error {
-	fss, err := fs.ForVolume(vol, dryRun)
+func snapshot(vol string, vopts opts.VolOptions, p *policy.Policy, dryRun bool) error {
+	fss, err := fs.ForVolume(vol, vopts, dryRun)
 	if err != nil {
 		return fmt.Errorf("failed to open volume: %v", err)
 	}
