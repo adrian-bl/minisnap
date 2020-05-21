@@ -23,13 +23,16 @@ type FsSnap interface {
 	Delete(*snapobj.SnapObj) error
 }
 
-func ForVolume(path string, vopts opts.VolOptions, dryRun bool) (FsSnap, error) {
+func ForVolume(path string, vopts opts.VolOptions, dryRun, verbose bool) (FsSnap, error) {
 	buf := &syscall.Statfs_t{}
 	if err := syscall.Statfs(path, buf); err != nil {
 		return nil, err
 	}
 
-	e := &exec.Exec{DryRun: dryRun}
+	e := &exec.Exec{
+		DryRun:  dryRun,
+		Verbose: verbose,
+	}
 	switch buf.Type {
 	case fsBtrfs:
 		if vopts.Recursive {

@@ -21,6 +21,7 @@ func init() {
 
 var (
 	dryRun   = flag.Bool("dry_run", false, "do not execute, just print what would be done")
+	verbose  = flag.Bool("verbose", false, "print executed commands")
 	confFile = flag.String("config", "/etc/minisnap.conf", "path to configuration file")
 )
 
@@ -48,7 +49,7 @@ func main() {
 			Now:  time.Now(),
 			Keep: vp.Schedule,
 		}
-		if err := snapshot(vol, vp.Options, p, *dryRun); err != nil {
+		if err := snapshot(vol, vp.Options, p, *dryRun, *verbose); err != nil {
 			xfail(fmt.Sprintf("volume %s: %v", vol, err))
 		}
 	}
@@ -56,8 +57,8 @@ func main() {
 }
 
 // snapshot performs the snapshotting operation on the given volume.
-func snapshot(vol string, vopts opts.VolOptions, p *policy.Policy, dryRun bool) error {
-	fss, err := fs.ForVolume(vol, vopts, dryRun)
+func snapshot(vol string, vopts opts.VolOptions, p *policy.Policy, dryRun, verbose bool) error {
+	fss, err := fs.ForVolume(vol, vopts, dryRun, verbose)
 	if err != nil {
 		return fmt.Errorf("failed to open volume: %v", err)
 	}
